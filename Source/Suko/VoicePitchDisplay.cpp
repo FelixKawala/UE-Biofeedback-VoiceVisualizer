@@ -2,8 +2,6 @@
 
 #include "VoicePitchDisplay.h"
 
-#include "RESTfunctionLibraray.h"
-
 // Sets default values
 AVoicePitchDisplay::AVoicePitchDisplay()
 {
@@ -68,13 +66,10 @@ void AVoicePitchDisplay::BeginPlay()
 	m_DisplayNextTargetInstanced->SetCastShadow(false);
 }
 
-float curTime = 0;
 // Called every frame
 void AVoicePitchDisplay::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	curTime += DeltaTime;
-	SetDisplayHand(curTime, 100.f);
 
 	if (GetWorld()->GetFirstPlayerController()->GetInputKeyTimeDown(EKeys::Zero) > 1.f)
 	{
@@ -88,8 +83,14 @@ void AVoicePitchDisplay::Tick(float DeltaTime)
 	}
 }
 
+double lastValue = 50.0;
+const double smoothingFactor = 0.1;
+
 void AVoicePitchDisplay::SetDisplayHand(float value, float maxValue, float minValue)
 {
+	value = (value * smoothingFactor) + (lastValue * (1 - smoothingFactor));
+	lastValue = value;
+
 	value -= minValue;
 	maxValue -= minValue;
 	const float scaledValue = (value / maxValue) * 360;

@@ -8,8 +8,10 @@
 #include "Interfaces/IHttpResponse.h"
 #include "Json.h"
 
+#include "VoicePitchDisplay.h"
 
-void URESTfunctionLibraray::HttpRequest(const FString& url, const TArray<FString>& searchToken, FString& output)
+
+void URESTfunctionLibraray::HttpRequest(const FString& url, const TArray<FString>& searchToken, AVoicePitchDisplay* display)
 {
     FHttpModule& httpModule = FHttpModule::Get();
 
@@ -23,7 +25,7 @@ void URESTfunctionLibraray::HttpRequest(const FString& url, const TArray<FString
     pRequest->SetVerb(TEXT("GET"));
 
     // We'll need to tell the server what type of content to expect in the POST data
-    //pRequest->SetHeader(TEXT("Content-Type"), TEXT("application/x-www-form-urlencoded"));
+    pRequest->SetHeader(TEXT("Content-Type"), TEXT("text/json"));
 
     //FString RequestContent = TEXT("identity=") + NewUser + TEXT("&password=") + NewPassword + TEXT("&query=") + uriQuery;
     // Set the POST content, which contains:
@@ -49,15 +51,19 @@ void URESTfunctionLibraray::HttpRequest(const FString& url, const TArray<FString
     pRequest->OnProcessRequestComplete().BindLambda(
         // Here, we "capture" the 'this' pointer (the "&"), so our lambda can call this
         // class's methods in the callback.
-        [&output](
+        [display](
             FHttpRequestPtr pRequest,
             FHttpResponsePtr pResponse,
             bool connectedSuccessfully) mutable {
 
                 if (connectedSuccessfully) {
-
+                    const FString string = pResponse->GetContentAsString();
                     // We should have a JSON response. Attempt to process it.
-                    output = pResponse->GetContentAsString();
+                    UE_LOG(LogTemp, Error, TEXT("Server response: %s"), *string);
+                    //ProcessJSON(string, display);
+                    if (!string.Equals(TEXT("nan"))) { // false if not a number (NaN)
+                        display->SetDisplayHand(FCString::Atod(*string), 4000, 50);
+                    }
                 }
                 else {
                     switch (pRequest->GetStatus()) {
@@ -73,26 +79,23 @@ void URESTfunctionLibraray::HttpRequest(const FString& url, const TArray<FString
     pRequest->ProcessRequest();
 }
 
-TArray<FString> URESTfunctionLibraray::ProcessJSON(const FString& ResponseContent)
+TArray<FString> URESTfunctionLibraray::ProcessJSON(const FString& ResponseContent, AVoicePitchDisplay* display)
 {
     // Validate http called us back on the Game Thread...
     check(IsInGameThread());
 
     TSharedRef<TJsonReader<TCHAR>> jsonReader = TJsonReaderFactory<TCHAR>::Create(ResponseContent);
-    TSharedPtr<FJsonObject> outObject;
+    TSharedPtr<FJsonValue> outValue;
 
     TArray<FString> returnArray;
-    if (FJsonSerializer::Deserialize(jsonReader, outObject))
+    if (FJsonSerializer::Deserialize(jsonReader, outValue))
     {
-        FString id;
-        int i = 0;
-        for (auto& jsonObject : outObject->GetArrayField(TEXT("data"))) {
-            if (jsonObject->AsObject()->TryGetStringField(TEXT("id"), id)) {
-                returnArray.Add(id);
-                UE_LOG(LogTemp, Warning, TEXT("ID %d: %s"), i, *id);
-            }
-            i++;
-        }
+        const double frequency = outValue->AsNumber();
+        returnArray.Add(TEXT("OK"));
+        UE_LOG(LogTemp, Warning, TEXT("frequency: %d"), frequency);
+
+        display->SetDisplayHand(frequency, 4000, 50);
+        
     }
     return returnArray;
 }

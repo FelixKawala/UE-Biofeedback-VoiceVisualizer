@@ -10,7 +10,7 @@
 #include "VoicePitchDisplay.generated.h"
 
 UCLASS()
-class SUKO_API AVoicePitchDisplay : public AActor
+class ADUID_API AVoicePitchDisplay : public AActor
 {
 	GENERATED_BODY()
 

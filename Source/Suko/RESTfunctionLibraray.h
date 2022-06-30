@@ -11,12 +11,12 @@
  *
  */
 UCLASS()
-class SUKO_API URESTfunctionLibraray : public UBlueprintFunctionLibrary
+class ADUID_API URESTfunctionLibraray : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
 	UFUNCTION(BlueprintCallable)
-	static void HttpRequest(const FString& url, const TArray<FString>& searchToken, FString& output);
+	static void HttpRequest(const FString& url, const TArray<FString>& searchToken, AVoicePitchDisplay* display);
 	UFUNCTION(BlueprintCallable)
-	static TArray<FString> ProcessJSON(const FString& ResponseContent);
+	static TArray<FString> ProcessJSON(const FString& ResponseContent, AVoicePitchDisplay* display);
 };
