@@ -11,7 +11,7 @@
  *
  */
 UCLASS()
-class ADUID_API URESTfunctionLibraray : public UBlueprintFunctionLibrary
+class SUKO_API URESTfunctionLibraray : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
