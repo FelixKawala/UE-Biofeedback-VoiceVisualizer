@@ -2,6 +2,7 @@
 
 
 #include "NoteHarmonizer.h"
+#include "NoteHarmonizer_cpp.h"
 
 // Sets default values for this component's properties
 UNoteHarmonizer::UNoteHarmonizer()
@@ -10,7 +11,7 @@ UNoteHarmonizer::UNoteHarmonizer()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	// ...
+	lastChords_ = { -1 };
 }
 
 
@@ -23,12 +24,20 @@ void UNoteHarmonizer::BeginPlay()
 	
 }
 
-
-// Called every frame
-void UNoteHarmonizer::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+TArray<int> UNoteHarmonizer::GetAppropriateChordFromPitch(int note, bool major, int keyCenter)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	std::vector<std::vector<std::vector<int>>> stack;
+	if (major) {
+		stack = NoteHarmonizer::getMajorChordStack(keyCenter);
+	}
+	else {
+		stack = NoteHarmonizer::getMinorChordStack(keyCenter);
+	}
+	lastChords_ = NoteHarmonizer::getAppropriateChordFromPitch(note, stack, lastChords_);
 
-	// ...
+	TArray<int> returnedChords;
+	for (int chord : lastChords_) {
+		returnedChords.Add(chord);
+	}
+	return returnedChords;
 }
-
