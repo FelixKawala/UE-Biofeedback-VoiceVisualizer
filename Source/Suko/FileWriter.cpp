@@ -8,6 +8,8 @@ FString UFileWriter::participantString_ = TEXT("");
 FString UFileWriter::conditionString_ = TEXT("");
 uint32 UFileWriter::participantNumber_ = 0;
 
+TArray<FString> UFileWriter::fileContent_ = {};
+
 uint32 UFileWriter::GetCurrentParticipantNumber()
 {
 	// Get current participant number.
@@ -52,19 +54,41 @@ FString UFileWriter::BuildPath()
 	return path;
 }
 
-bool UFileWriter::NewParticipant()
+bool UFileWriter::NewParticipant(int& participantNumber)
 {
 	if (participantNumber_ == 0){
 		participantNumber_ = GetCurrentParticipantNumber();
 	}
 	const bool ret = AdvanceCurrentParticipantNumber();
 	participantString_ = BuildParticipantString(participantNumber_);
+	participantNumber = participantNumber_;
 	return ret;
 }
 
 void UFileWriter::NewCondition(FString condition)
 {
 	conditionString_ = condition;
+}
+
+void UFileWriter::AddContent(FString row)
+{
+	fileContent_.Push(row);
+}
+void UFileWriter::WriteContent(FString fileName)
+{
+	if (fileContent_.IsEmpty()){
+		return;
+	}
+	WriteStrings(fileContent_, fileName);
+	fileContent_.Empty();
+}
+void UFileWriter::WriteContentToCSV()
+{
+	if (fileContent_.IsEmpty()){
+		return;
+	}
+	WriteStringsToCSV(fileContent_);
+	fileContent_.Empty();
 }
 
 bool UFileWriter::WriteStrings(UPARAM(ref) TArray<FString>& strings, FString fileName)

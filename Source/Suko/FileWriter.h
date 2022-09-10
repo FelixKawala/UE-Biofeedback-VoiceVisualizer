@@ -21,6 +21,8 @@ private:
 	static FString conditionString_;
 	static uint32 participantNumber_;
 
+	static TArray<FString> fileContent_;
+
 	static uint32 GetCurrentParticipantNumber();
 	static bool AdvanceCurrentParticipantNumber();
 
@@ -28,10 +30,21 @@ private:
 
 public:
 	UFUNCTION(BlueprintCallable)
-	static bool NewParticipant();
+	static bool NewParticipant(int& participantNumber);
 
 	UFUNCTION(BlueprintCallable)
 	static void NewCondition(FString condition);
+
+	UFUNCTION(BlueprintCallable)
+	static void AddContent(FString row);
+
+	// This also clears content.
+	UFUNCTION(BlueprintCallable)
+	static void WriteContent(FString fileName);
+
+	// This also clears content.
+	UFUNCTION(BlueprintCallable)
+	static void WriteContentToCSV();
 
 	UFUNCTION(BlueprintCallable)
 	static bool WriteStrings(UPARAM(ref) TArray<FString>& strings, FString fileName);
