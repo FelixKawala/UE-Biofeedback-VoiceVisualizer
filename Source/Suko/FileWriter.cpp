@@ -74,6 +74,10 @@ void UFileWriter::AddContent(FString row)
 {
 	fileContent_.Push(row);
 }
+TArray<FString>& UFileWriter::GetContent()
+{
+	return fileContent_;
+}
 void UFileWriter::WriteContent(FString fileName)
 {
 	if (fileContent_.IsEmpty()){

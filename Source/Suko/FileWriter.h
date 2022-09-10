@@ -32,11 +32,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static bool NewParticipant(int& participantNumber);
 
+	// Used for the file name, so choose something that will work on your OS.
 	UFUNCTION(BlueprintCallable)
 	static void NewCondition(FString condition);
 
 	UFUNCTION(BlueprintCallable)
 	static void AddContent(FString row);
+
+	UFUNCTION(BlueprintCallable)
+	static TArray<FString>& GetContent();
 
 	// This also clears content.
 	UFUNCTION(BlueprintCallable)
