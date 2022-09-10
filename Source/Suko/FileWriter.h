@@ -37,5 +37,5 @@ public:
 	static bool WriteStrings(UPARAM(ref) TArray<FString>& strings, FString fileName);
 
 	UFUNCTION(BlueprintCallable)
-	static bool WriteStringsToCSV(UPARAM(ref) TArray<FString>& strings);
+	static bool WriteStringsToCSV(TArray<FString> strings);
 };
